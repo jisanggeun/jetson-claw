@@ -27,13 +27,11 @@ def extract_json(text: str) -> str:
 
 
 async def _call_gemini(prompt: str, model: str = "gemini-2.5-flash") -> str:
-    from google import genai
+    import google.generativeai as genai
 
-    client = genai.Client(api_key=get_required_env("GEMINI_API_KEY"))
-    response = await client.aio.models.generate_content(
-        model=model,
-        contents=prompt,
-    )
+    genai.configure(api_key=get_required_env("GEMINI_API_KEY"))
+    gen_model = genai.GenerativeModel(model)
+    response = await gen_model.generate_content_async(prompt)
     return response.text
 
 
