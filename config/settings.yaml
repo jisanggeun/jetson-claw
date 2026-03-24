@@ -14,15 +14,19 @@ news:
     - name: stocktitan
       url: "https://www.stocktitan.net/rss"
       type: rss
+      mode: realtime  # 3분 폴링 (워치리스트 + 속보 + LLM 평가)
     - name: google_news_business
       url: "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB"
       type: rss
+      mode: summary   # 3시간 요약만
     - name: cnbc_markets
       url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258"
       type: rss
+      mode: summary
     - name: marketwatch
       url: "https://feeds.marketwatch.com/marketwatch/marketpulse/"
       type: rss
+      mode: summary
 
   polling:
     instant_interval_minutes: 3

@@ -37,10 +37,12 @@ class Article(NamedTuple):
     summary: str
 
 
-def _fetch_rss(sources: list[dict]) -> list[Article]:
-    """모든 RSS 소스에서 기사 수집 (타임아웃 10초)."""
+def _fetch_rss(sources: list[dict], mode: str | None = None) -> list[Article]:
+    """RSS 소스에서 기사 수집. mode 지정 시 해당 mode 소스만."""
     articles = []
     for source in sources:
+        if mode is not None and source.get("mode", "realtime") != mode:
+            continue
         try:
             response = urllib.request.urlopen(source["url"], timeout=10)
             feed = feedparser.parse(response.read())
@@ -177,8 +179,8 @@ async def run_poll() -> None:
     state = load_state(STATE_FILE)
     seen = set(state.get("seen_urls", []))
 
-    # RSS 수집
-    articles = _fetch_rss(news_config["sources"])
+    # RSS 수집 (realtime 소스만)
+    articles = _fetch_rss(news_config["sources"], mode="realtime")
     new_articles = [a for a in articles if a.link not in seen]
 
     if not new_articles:
@@ -236,20 +238,28 @@ async def run_poll() -> None:
 
 
 async def run_summary() -> None:
-    """3시간마다 실행: pending 기사 묶음 요약."""
+    """3시간마다 실행: summary 소스 중요 기사 + realtime pending 묶음 요약."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
     )
 
+    settings = load_settings()
+    news_config = settings["news"]
     state = load_state(STATE_FILE)
+    seen = set(state.get("seen_urls", []))
+
+    # 1) summary 소스에서 새 기사 수집
+    summary_articles = _fetch_rss(news_config["sources"], mode="summary")
+    new_summary = [a for a in summary_articles if a.link not in seen]
+
+    # LLM으로 중요 기사만 필터 (threshold 4+)
+    threshold = news_config["breaking"].get("llm_threshold", 4)
+    important = await _rate_importance(new_summary, threshold) if new_summary else []
+
+    # 2) realtime pending 기사
     pending = state.get("pending_articles", [])
-
-    if not pending:
-        logger.info("No pending articles")
-        return
-
-    articles = [
+    pending_articles = [
         Article(
             title=p["title"],
             link=p["link"],
@@ -260,21 +270,26 @@ async def run_summary() -> None:
         for p in pending
     ]
 
-    # 최대 15건만 요약
-    to_summarize = articles[:15]
-    summary = await _translate_and_summarize(to_summarize)
+    # 합산 (최대 15건)
+    all_articles = (important + pending_articles)[:15]
 
-    header = f"[3시간 요약] {len(to_summarize)}건\n\n"
+    if not all_articles:
+        logger.info("No articles for summary")
+        return
+
+    summary = await _translate_and_summarize(all_articles)
+    header = f"[3시간 요약] {len(all_articles)}건\n\n"
     await send_message(header + summary)
 
-    # pending 비우기
+    # seen + pending 업데이트
+    all_urls = list(seen | {a.link for a in summary_articles})
     new_state = {
-        "seen_urls": state.get("seen_urls", []),
+        "seen_urls": all_urls[-500:],
         "pending_articles": [],
         "last_summary": datetime.now(timezone.utc).isoformat(),
     }
     save_state(STATE_FILE, new_state)
-    logger.info("Summary sent: %d articles", len(to_summarize))
+    logger.info("Summary sent: %d articles", len(all_articles))
 
 
 if __name__ == "__main__":
