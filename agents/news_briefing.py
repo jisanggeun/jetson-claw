@@ -139,6 +139,7 @@ async def _translate_and_summarize(articles: list[Article]) -> str:
 
     prompt = f"""다음 영어 뉴스 기사들을 한국어로 번역/요약하세요.
 회사명, 인명, 티커(AAPL, TSLA 등), 브랜드는 영문 그대로 유지하세요.
+문체는 간결한 '~임', '~함', '~됨' 체로 작성하세요.
 
 각 기사마다:
 1. 헤드라인 한국어 번역
