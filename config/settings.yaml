@@ -14,8 +14,8 @@ news:
     - name: stocktitan
       url: "https://www.stocktitan.net/rss"
       type: rss
-    - name: yahoo_finance
-      url: "https://finance.yahoo.com/news/rssindex"
+    - name: google_news_business
+      url: "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB"
       type: rss
     - name: cnbc_markets
       url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258"
