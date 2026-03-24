@@ -5,7 +5,12 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-PYTHON="$PROJECT_DIR/.venv/bin/python"
+# venv가 있으면 사용, 없으면 시스템 python3
+if [ -f "$PROJECT_DIR/.venv/bin/python" ]; then
+  PYTHON="$PROJECT_DIR/.venv/bin/python"
+else
+  PYTHON="$(which python3)"
+fi
 
 echo "Project: $PROJECT_DIR"
 echo "Python:  $PYTHON"
