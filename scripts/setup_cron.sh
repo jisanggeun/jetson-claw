@@ -5,8 +5,11 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-# venv가 있으면 사용, 없으면 시스템 python3
-if [ -f "$PROJECT_DIR/.venv/bin/python" ]; then
+
+# conda claw 환경 > venv > 시스템 python3
+if [ -f "$HOME/miniconda3/envs/claw/bin/python" ]; then
+  PYTHON="$HOME/miniconda3/envs/claw/bin/python"
+elif [ -f "$PROJECT_DIR/.venv/bin/python" ]; then
   PYTHON="$PROJECT_DIR/.venv/bin/python"
 else
   PYTHON="$(which python3)"
