@@ -1,0 +1,64 @@
+# Jetson Automation Settings
+# 티커/키워드 수정은 이 파일만 편집하면 됩니다.
+
+email:
+  check_interval_hours: 3
+  trash_categories:
+    - promotions
+    - ads
+    - newsletters
+  action: trash  # trash | permanent
+
+news:
+  sources:
+    - name: stocktitan
+      url: "https://www.stocktitan.net/rss"
+      type: rss
+    - name: reuters_business
+      url: "https://www.reutersagency.com/feed/?best-topics=business-finance"
+      type: rss
+    - name: cnbc_markets
+      url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258"
+      type: rss
+    - name: marketwatch
+      url: "https://feeds.marketwatch.com/marketwatch/marketpulse/"
+      type: rss
+
+  polling:
+    instant_interval_minutes: 3
+    summary_interval_hours: 3
+
+  watchlist:
+    tickers:
+      - NBIS
+      - TLRY
+      - CGC
+      - ACB
+      - CRON
+      - SNDL
+      - MJ
+      - MSOS
+    keywords:
+      - cannabis
+      - marijuana
+      - hemp
+      - weed
+      - DEA
+      - "Schedule III"
+      - rescheduling
+      - legalization
+      - "SAFE Banking"
+      - "FDA cannabis"
+      - "state legalization"
+
+  breaking:
+    keywords:
+      - breaking
+      - urgent
+      - "Fed rate"
+      - recession
+      - crash
+      - halt
+      - bankruptcy
+    llm_threshold: 4  # 1-5 scale, 4+ = instant alert
+
