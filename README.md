@@ -1,4 +1,4 @@
-# Jetson Automation
+# Jetson Claw
 
 Jetson Orin Nano에서 24/7 운영하는 개인 자동화 시스템.
 

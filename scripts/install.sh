@@ -7,7 +7,7 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-echo "=== Jetson Automation 설치 ==="
+echo "=== Jetson Claw 설치 ==="
 
 # 1. Python venv 생성
 echo "[1/4] Python 가상환경 생성..."

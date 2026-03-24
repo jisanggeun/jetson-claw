@@ -10,8 +10,8 @@ PYTHON="$PROJECT_DIR/.venv/bin/python"
 echo "Project: $PROJECT_DIR"
 echo "Python:  $PYTHON"
 
-# 기존 jetson-automation cron 제거 후 재등록
-(crontab -l 2>/dev/null | grep -v "jetson-automation") | crontab -
+# 기존 jetson-claw cron 제거 후 재등록
+(crontab -l 2>/dev/null | grep -v "jetson-claw") | crontab -
 
 {
   crontab -l 2>/dev/null || true
@@ -28,4 +28,4 @@ echo "Python:  $PYTHON"
 } | crontab -
 
 echo "Cron 등록 완료:"
-crontab -l | grep "jetson-automation"
+crontab -l | grep "jetson-claw"
