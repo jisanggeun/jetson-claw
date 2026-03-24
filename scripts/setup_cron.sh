@@ -19,21 +19,21 @@ echo "Project: $PROJECT_DIR"
 echo "Python:  $PYTHON"
 
 # 기존 jetson-claw cron 제거 후 재등록
-(crontab -l 2>/dev/null | grep -v "jetson-claw") | crontab -
+EXISTING=$(crontab -l 2>/dev/null | grep -v "agents\.email_cleaner\|agents\.news_briefing" || true)
 
 {
-  crontab -l 2>/dev/null || true
+  echo "$EXISTING"
 
   # 이메일 정리: 3시간마다 (00, 03, 06, 09, 12, 15, 18, 21)
-  echo "0 */3 * * * cd $PROJECT_DIR && $PYTHON -m agents.email_cleaner >> logs/email.log 2>&1"
+  echo "0 */3 * * * cd $PROJECT_DIR && $PYTHON -m agents.email_cleaner >> $PROJECT_DIR/logs/email.log 2>&1"
 
   # 뉴스 폴링: 3분마다 (워치리스트 + 속보 즉시 알림)
-  echo "*/3 * * * * cd $PROJECT_DIR && $PYTHON -m agents.news_briefing poll >> logs/news_poll.log 2>&1"
+  echo "*/3 * * * * cd $PROJECT_DIR && $PYTHON -m agents.news_briefing poll >> $PROJECT_DIR/logs/news_poll.log 2>&1"
 
   # 뉴스 요약: 3시간마다 (일반 뉴스 묶음)
-  echo "5 */3 * * * cd $PROJECT_DIR && $PYTHON -m agents.news_briefing summary >> logs/news_summary.log 2>&1"
+  echo "5 */3 * * * cd $PROJECT_DIR && $PYTHON -m agents.news_briefing summary >> $PROJECT_DIR/logs/news_summary.log 2>&1"
 
 } | crontab -
 
 echo "Cron 등록 완료:"
-crontab -l | grep "jetson-claw"
+crontab -l
